@@ -6,7 +6,8 @@ import {
   ArrowRight,
   AlertCircle,
   CheckCircle2,
-  RefreshCw
+  RefreshCw,
+  Eye
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
@@ -280,11 +281,23 @@ export default function Login({ onLogin }) {
           </form>
         )}
 
-        {/* Footer Link */}
-        <div className="pt-2 text-center border-t border-gray-100">
-          <Link to="/" className="text-xs text-gray-400 hover:text-green-600 transition-colors">
-            {t('btn_continue_guest')}
+        {/* Continue as Guest */}
+        <div className="pt-3 space-y-3 border-t border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-100" />
+            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">or</span>
+            <div className="flex-1 h-px bg-gray-100" />
+          </div>
+          <Link
+            to="/"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-green-400 hover:bg-green-50/50 text-gray-500 hover:text-green-700 text-sm font-semibold transition-all group"
+          >
+            <Eye className="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-colors" />
+            <span>{t('btn_continue_guest')}</span>
           </Link>
+          <p className="text-center text-[11px] text-gray-400 leading-relaxed">
+            Browse market prices, schemes &amp; weather without an account.
+          </p>
         </div>
 
       </div>
