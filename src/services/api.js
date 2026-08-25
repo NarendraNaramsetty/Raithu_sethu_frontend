@@ -1,9 +1,15 @@
 /**
  * RaithuSetu API Client Service
- * Connects React frontend (http://localhost:5173) with Django DRF backend (http://127.0.0.1:8000)
+ *
+ * Base URL priority:
+ *  1. VITE_API_BASE_URL env variable (set this in .env.local for dev, or in your
+ *     deployment platform's environment settings for production)
+ *  2. Falls back to http://127.0.0.1:8000/api for local development only
  */
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') ||
+  'http://127.0.0.1:8000/api';
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('raithu_auth_token');
