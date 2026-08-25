@@ -19,6 +19,7 @@ import {
   Leaf,
   FileText
 } from 'lucide-react';
+import PageLoader from '../components/PageLoader';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
@@ -389,13 +390,11 @@ export default function DiseaseDetection({ isLoggedIn = false }) {
           </div>
 
           {isAnalyzing ? (
-            <div className="py-20 text-center space-y-4">
-              <div className="w-12 h-12 border-3 border-green-600 border-t-transparent rounded-full animate-spin mx-auto" />
-              <div>
-                <p className="text-base font-bold text-gray-800">{t('diag_analyzing')}</p>
-                <p className="text-xs text-gray-500 mt-1">{t('diag_analyzing_sub')}</p>
-              </div>
-            </div>
+            <PageLoader
+              variant="scan"
+              label={t('diag_analyzing')}
+              sublabel={t('diag_analyzing_sub')}
+            />
           ) : result ? (
             <div className="space-y-4 animate-in fade-in duration-300">
               

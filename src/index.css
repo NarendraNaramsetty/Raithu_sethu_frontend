@@ -5,3 +5,9 @@
     @apply bg-gray-50 text-gray-900 antialiased font-sans min-h-screen;
   }
 }
+
+/* ── PageLoader shimmer animation ── */
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}

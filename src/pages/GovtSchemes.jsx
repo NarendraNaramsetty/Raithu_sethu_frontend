@@ -6,6 +6,7 @@ import {
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
+import PageLoader from '../components/PageLoader';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -87,10 +88,7 @@ export default function GovtSchemes() {
 
       {/* Schemes Grid */}
       {loading ? (
-        <div className="py-16 text-center text-gray-400 space-y-2">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-green-600" />
-          <p className="text-sm">{t('schemes_loading')}</p>
-        </div>
+        <PageLoader variant="cards" label={t('schemes_loading')} count={4} />
       ) : schemes.length === 0 ? (
         <div className="py-16 text-center text-gray-500 bg-white rounded-2xl border border-gray-100">
           No schemes found in this category.

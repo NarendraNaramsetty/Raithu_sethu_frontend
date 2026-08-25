@@ -17,6 +17,7 @@ import {
   BarChart3,
   Calendar
 } from 'lucide-react';
+import PageLoader from '../components/PageLoader';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -380,10 +381,8 @@ export default function MarketPrices() {
             <tbody className="divide-y divide-gray-100">
               {loading && mandiData.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-16 text-center text-gray-500">
-                    <RefreshCw className="w-8 h-8 animate-spin mx-auto text-green-600 mb-3" />
-                    <p className="font-semibold text-gray-800">{t('mandi_loading')}</p>
-                    <p className="text-xs text-gray-400 mt-1">Contacting Data.gov.in Mandi API...</p>
+                  <td colSpan={7} className="py-4">
+                    <PageLoader variant="cards" label={t('mandi_loading')} count={3} />
                   </td>
                 </tr>
               ) : mandiData.length === 0 ? (

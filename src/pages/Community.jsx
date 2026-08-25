@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+import PageLoader from '../components/PageLoader';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -1345,10 +1346,7 @@ export default function Community({ isLoggedIn = false, currentUser = null }) {
 
             {/* Posts list */}
             {postsLoading && posts.length === 0 ? (
-              <div className="py-16 text-center text-gray-400 space-y-2">
-                <RefreshCw className="w-8 h-8 animate-spin mx-auto text-green-600" />
-                <p className="text-sm">{t('loading_posts')}</p>
-              </div>
+              <PageLoader variant="posts" label={t('loading_posts')} />
             ) : postsError ? (
               <div className="py-10 text-center space-y-3">
                 <AlertCircle className="w-8 h-8 text-red-400 mx-auto" />
@@ -1511,10 +1509,7 @@ export default function Community({ isLoggedIn = false, currentUser = null }) {
           </div>
 
           {machineryLoading ? (
-            <div className="py-12 text-center text-gray-400 space-y-2">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto text-green-600" />
-              <p className="text-sm">{t('loading_more')}</p>
-            </div>
+            <PageLoader variant="cards" label={t('loading_more')} count={3} />
           ) : machinery.length === 0 ? (
             <div className="py-14 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-4 px-6">
               <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mx-auto">

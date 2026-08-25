@@ -11,6 +11,7 @@ import {
   Compass,
   Calendar
 } from 'lucide-react';
+import PageLoader from '../components/PageLoader';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -159,10 +160,7 @@ export default function Weather() {
       )}
 
       {loading && !currentWeather ? (
-        <div className="py-20 text-center text-gray-400 space-y-2">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-green-600" />
-          <p className="text-sm">{t('weather_loading')}</p>
-        </div>
+        <PageLoader variant="weather" label={t('weather_loading')} />
       ) : currentWeather ? (
         <>
           {/* Current Live Weather Card */}
