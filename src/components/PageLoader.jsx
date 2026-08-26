@@ -83,43 +83,38 @@ function ProgressBar({ steps, currentStep }) {
 }
 
 // ─── VARIANT: scan (Disease Detection AI) ────────────────────────────────────
-function ScanLoader({ label, sublabel }) {
+function ScanLoader({ label, sublabel, progress = 0 }) {
   const steps = [
     'Reading image pixels...',
     'Detecting crop type...',
     'Matching disease patterns...',
     'Preparing treatment plan...',
+    'Almost done...',
   ];
-  const [step, setStep] = useState(0);
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      setStep((s) => (s + 1) % steps.length);
-    }, 900);
-    return () => clearInterval(id);
-  }, []);
+  // Pick the step label based on progress bracket
+  const stepIndex = Math.min(
+    Math.floor((progress / 100) * steps.length),
+    steps.length - 1
+  );
 
   return (
     <div className="py-16 flex flex-col items-center gap-6">
-      {/* Scan beam animation */}
+      {/* Scan ring animation */}
       <div className="relative w-24 h-24">
-        {/* Outer rotating ring */}
         <div className="absolute inset-0 rounded-full border-4 border-green-100" />
         <div className="absolute inset-0 rounded-full border-4 border-t-green-600 border-r-green-400 border-b-transparent border-l-transparent animate-spin" />
-        {/* Inner slower ring */}
         <div
           className="absolute inset-3 rounded-full border-2 border-t-emerald-500 border-r-transparent border-b-transparent border-l-emerald-300"
           style={{ animation: 'spin 1.8s linear infinite reverse' }}
         />
-        {/* Center leaf */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-10 h-10 rounded-full bg-green-50 border border-green-100 flex items-center justify-center">
             <Leaf className="w-5 h-5 text-green-600 animate-pulse" />
           </div>
         </div>
-        {/* Scan line sweep */}
         <div
-          className="absolute left-1/2 top-1/2 w-10 h-0.5 bg-gradient-to-r from-green-500 to-transparent origin-left"
+          className="absolute left-1/2 top-1/2 w-10 h-0.5 bg-gradient-to-r from-green-500 to-transparent"
           style={{ animation: 'spin 1.2s linear infinite', transformOrigin: 'left center', marginTop: '-1px' }}
         />
       </div>
@@ -129,7 +124,37 @@ function ScanLoader({ label, sublabel }) {
         <p className="text-xs text-gray-500">{sublabel}</p>
       </div>
 
-      <ProgressBar steps={steps} currentStep={step} />
+      {/* Progress bar — real fill based on progress prop */}
+      <div className="w-full max-w-xs mx-auto space-y-2">
+        {/* Percentage label */}
+        <div className="flex items-center justify-between text-xs font-semibold px-0.5">
+          <span className="text-green-700 animate-pulse">{steps[stepIndex]}</span>
+          <span className="text-gray-500 font-mono">{Math.round(progress)}%</span>
+        </div>
+
+        {/* Track */}
+        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+          {/* Fill */}
+          <div
+            className="h-full rounded-full transition-all duration-300 ease-out"
+            style={{
+              width: `${progress}%`,
+              background: progress >= 100
+                ? 'linear-gradient(90deg, #16a34a, #10b981)'
+                : 'linear-gradient(90deg, #16a34a, #34d399, #16a34a)',
+              backgroundSize: progress >= 100 ? 'auto' : '200% 100%',
+              animation: progress >= 100 ? 'none' : 'shimmer 1.2s ease-in-out infinite',
+            }}
+          />
+        </div>
+
+        {/* Completion flash */}
+        {progress >= 100 && (
+          <p className="text-center text-xs font-bold text-green-600 animate-pulse">
+            ✓ Analysis complete — loading results...
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -291,16 +316,17 @@ function DefaultLoader({ label, sublabel, icon: Icon = Wifi }) {
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export default function PageLoader({
-  variant = 'default',
-  label   = 'Loading...',
+  variant  = 'default',
+  label    = 'Loading...',
   sublabel = '',
-  count   = 3,
+  count    = 3,
   icon,
-  color   = 'green',
-  size    = 'md',
+  color    = 'green',
+  size     = 'md',
+  progress = 0,
 }) {
   switch (variant) {
-    case 'scan':    return <ScanLoader    label={label} sublabel={sublabel} />;
+    case 'scan':    return <ScanLoader    label={label} sublabel={sublabel} progress={progress} />;
     case 'cards':   return <CardsLoader   label={label} count={count} icon={icon} />;
     case 'weather': return <WeatherLoader label={label} />;
     case 'posts':   return <PostsLoader   label={label} />;

@@ -166,6 +166,8 @@ export default function DiseaseDetection({ isLoggedIn = false }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [pendingResult, setPendingResult] = useState(null);  // holds result until 100%
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [scanHistory, setScanHistory] = useState([]);
@@ -187,8 +189,29 @@ export default function DiseaseDetection({ isLoggedIn = false }) {
     const targetFile = file || selectedFile;
     if (!targetFile) return;
 
+    // Reset state
     setIsAnalyzing(true);
+    setAnalysisProgress(0);
+    setPendingResult(null);
     setError(null);
+    setResult(null);
+
+    // ── Progress timer: increments quickly at first, then slows near 99% ──
+    // Total simulated duration ~8s. API usually takes 3-10s.
+    let current = 0;
+    const progressInterval = setInterval(() => {
+      setAnalysisProgress((prev) => {
+        // Ease curve: fast 0→70, slow 70→90, crawl 90→99
+        let increment;
+        if (prev < 70)      increment = 1.8;
+        else if (prev < 88) increment = 0.6;
+        else if (prev < 99) increment = 0.15;
+        else                increment = 0;   // hold at 99 until API responds
+        const next = Math.min(prev + increment, 99);
+        current = next;
+        return next;
+      });
+    }, 120);
 
     try {
       const formData = new FormData();
@@ -197,20 +220,39 @@ export default function DiseaseDetection({ isLoggedIn = false }) {
 
       const res = await api.disease.analyze(formData);
 
+      // API responded — stop the interval
+      clearInterval(progressInterval);
+
       if (res.status === 'invalid_image') {
         setError(t('invalid_image_msg') || res.message);
-        setResult(null);
-      } else if (res.status === 'insufficient_image') {
-        setError(t('insufficient_image_msg') || res.message);
-        setResult(null);
-      } else {
-        setResult(res);
-        fetchHistory();
+        setAnalysisProgress(0);
+        setIsAnalyzing(false);
+        return;
       }
+      if (res.status === 'insufficient_image') {
+        setError(t('insufficient_image_msg') || res.message);
+        setAnalysisProgress(0);
+        setIsAnalyzing(false);
+        return;
+      }
+
+      // Push bar to 100% smoothly, then reveal result after a short pause
+      setPendingResult(res);
+      setAnalysisProgress(100);
+
+      // Wait 700ms so user sees the 100% state, then show result
+      setTimeout(() => {
+        setResult(res);
+        setIsAnalyzing(false);
+        setAnalysisProgress(0);
+        fetchHistory();
+      }, 700);
+
     } catch (err) {
+      clearInterval(progressInterval);
       console.error('Analysis failed:', err);
       setError('AI Leaf Analysis failed. Please verify backend connectivity.');
-    } finally {
+      setAnalysisProgress(0);
       setIsAnalyzing(false);
     }
   };
@@ -394,6 +436,7 @@ export default function DiseaseDetection({ isLoggedIn = false }) {
               variant="scan"
               label={t('diag_analyzing')}
               sublabel={t('diag_analyzing_sub')}
+              progress={analysisProgress}
             />
           ) : result ? (
             <div className="space-y-4 animate-in fade-in duration-300">
