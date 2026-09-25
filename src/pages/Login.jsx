@@ -22,6 +22,7 @@ export default function Login({ onLogin }) {
   const [successMsg, setSuccessMsg] = useState(null);
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
+  const [demoOtp, setDemoOtp] = useState(null); // For development - shows OTP from API
   const navigate = useNavigate();
 
   // Countdown timer for OTP resend
@@ -57,6 +58,12 @@ export default function Login({ onLogin }) {
       setTimer(60);
       setCanResend(false);
       setSuccessMsg(res.message || `OTP sent to ${cleanEmail}`);
+      
+      // For development: Store the OTP from API response
+      if (res.demo_otp) {
+        setDemoOtp(res.demo_otp);
+        console.log('🔑 Development OTP:', res.demo_otp);
+      }
     } catch (err) {
       console.error('Failed to send OTP:', err);
       setError(err.message || 'Failed to send OTP. Please check your email and try again.');
@@ -158,34 +165,6 @@ export default function Login({ onLogin }) {
               </div>
             </div>
 
-            {/* OR divider */}
-            <div className="flex items-center gap-3 py-1">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">or</span>
-              <div className="flex-1 h-px bg-gray-200" />
-            </div>
-
-            {/* Mobile Number Field — coming soon, disabled */}
-            <div>
-              <label htmlFor="mobile-input" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                {t('mobile_label')}
-                <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-semibold rounded normal-case tracking-normal">Coming soon</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-300">
-                  +91
-                </span>
-                <input
-                  id="mobile-input"
-                  type="tel"
-                  disabled
-                  placeholder={t('mobile_placeholder')}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 text-sm font-medium bg-gray-50 text-gray-400 cursor-not-allowed"
-                />
-              </div>
-              <p className="text-[11px] text-gray-400 mt-1 pl-1">Mobile OTP login will be available soon. Please use Email to continue.</p>
-            </div>
-
             {/* Submit / Continue Button */}
             <button
               type="submit"
@@ -221,12 +200,40 @@ export default function Login({ onLogin }) {
                   setOtpSent(false);
                   setOtp('');
                   setError(null);
+                  setDemoOtp(null);
                 }}
                 className="text-green-700 hover:text-green-800 font-bold underline shrink-0 cursor-pointer"
               >
                 Change
               </button>
             </div>
+
+            {/* Development: Show OTP */}
+            {demoOtp && (
+              <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl space-y-2">
+                <div className="flex items-center gap-2 text-blue-900">
+                  <AlertCircle className="w-4 h-4 text-blue-600" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Development Mode - Your OTP</span>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-600 tracking-widest font-mono bg-white py-3 rounded-xl border-2 border-blue-200">
+                    {demoOtp}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtp(demoOtp);
+                    }}
+                    className="mt-2 text-xs text-blue-700 hover:text-blue-800 font-bold underline cursor-pointer"
+                  >
+                    Click to auto-fill
+                  </button>
+                </div>
+                <p className="text-[10px] text-blue-700 text-center">
+                  This OTP box appears in development mode for testing. It won't show in production.
+                </p>
+              </div>
+            )}
 
             <div>
               <label htmlFor="otp-input" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 text-center">

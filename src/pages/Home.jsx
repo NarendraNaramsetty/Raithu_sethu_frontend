@@ -22,7 +22,7 @@ export default function Home({ isLoggedIn, setIsLoggedIn }) {
           backgroundImage: `linear-gradient(to right, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.88) 45%, rgba(255, 255, 255, 0.4) 100%), url('/hero-bg.jpg')`,
         }}
       >
-        <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-green-100/90 text-green-800 text-xs font-bold shadow-xs">

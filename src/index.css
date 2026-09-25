@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 @layer base {
+  html,
   body {
     @apply bg-gray-50 text-gray-900 antialiased font-sans min-h-screen;
+    overflow-x: hidden;
   }
 }
 
